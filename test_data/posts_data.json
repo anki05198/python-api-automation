@@ -1,0 +1,4 @@
+{
+    "valid_post_ids": [1, 2, 3],
+    "invalid_post_ids": [999999]
+}
