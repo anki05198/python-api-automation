@@ -30,4 +30,6 @@ jobs:
         run: python -m playwright install --with-deps chromium
 
       - name: Run API and UI tests
+        env:
+          SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
         run: python -m pytest
