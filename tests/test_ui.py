@@ -1,22 +1,19 @@
-from playwright.sync_api import sync_playwright
+import os
+import pytest
+from config import UI_BASE_URL
 
 
-def test_login_debug():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
+@pytest.mark.ui
+def test_login(page):
+    page.goto(UI_BASE_URL)
 
-        page.goto("https://www.saucedemo.com/")
+    page.get_by_placeholder("Username").fill("standard_user")
 
-        page.get_by_placeholder("Username").fill("standard_user")
-        page.get_by_placeholder("Password").fill("secret_sauce")
+    password = os.getenv("SAUCE_PASSWORD")
+    page.get_by_placeholder("Password").fill(password)
 
-        page.get_by_role("button", name="Login").click()
+    page.get_by_role("button", name="Login").click()
 
-        page.wait_for_url("**/inventory.html")
+    page.wait_for_url("**/inventory.html")
 
-        assert "inventory" in page.url
-
-        page.screenshot(path="login_success.png")
-
-        browser.close()
+    assert "inventory" in page.url

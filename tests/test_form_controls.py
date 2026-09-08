@@ -1,19 +1,14 @@
-from playwright.sync_api import sync_playwright
+import pytest
 
 
-def test_checkbox():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
+@pytest.mark.ui
+def test_checkbox(page):
+    page.goto("https://www.lambdatest.com/selenium-playground/")
 
-        page.goto("https://www.lambdatest.com/selenium-playground/")
+    page.get_by_text("Checkbox Demo").click()
 
-        page.get_by_text("Checkbox Demo").click()
+    checkbox = page.locator('input[name="option1"]')
 
-        checkbox = page.locator('input[name="option1"]')
+    checkbox.check()
 
-        checkbox.check()
-
-        assert checkbox.is_checked()
-
-        browser.close()
+    assert checkbox.is_checked()
