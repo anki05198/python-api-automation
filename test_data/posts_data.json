@@ -1,4 +1,17 @@
 {
+    "schema_post_id": 1,
     "valid_post_ids": [1, 2, 3],
-    "invalid_post_ids": [999999]
+    "invalid_post_ids": [999999],
+     "create_posts": [
+        {
+            "title": "First Test Post",
+            "body": "This is my first test post",
+            "userId": 1
+        },
+        {
+            "title": "Second Test Post",
+            "body": "This is my second test post",
+            "userId": 2
+        }
+    ]
 }

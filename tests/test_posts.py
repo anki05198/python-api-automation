@@ -104,11 +104,16 @@
 
 #     assert response.status_code == 200
 
+
 import json
 import pytest
+import allure
+from utils.schema_validator import validate_json_schema
+from utils.api_assertions import assert_status_code, assert_json_field
 
 with open("test_data/posts_data.json") as file:
     test_data = json.load(file)
+
 
 def test_get_post_with_auth_headers(api_client, auth_headers):
 
@@ -136,7 +141,7 @@ def test_get_post_response_headers(api_client):
 
     response = api_client.get("/posts/1")
 
-    assert response.status_code == 200
+    assert_status_code(response, 200)
 
     content_type = response.headers.get("Content-Type")
 
@@ -151,11 +156,11 @@ def test_valid_post_ids(api_client, post_id):
 
     response = api_client.get(f"/posts/{post_id}")
 
-    assert response.status_code == 200
+    assert_status_code(response, 200)
 
     data = response.json()
 
-    assert data["id"] == post_id
+    assert_json_field(data, "id", post_id)
 
 
 @pytest.mark.parametrize(
@@ -166,4 +171,63 @@ def test_invalid_post_ids(api_client, post_id):
 
     response = api_client.get(f"/posts/{post_id}")
 
-    assert response.status_code == 404
+    assert_status_code(response, 404)
+
+@pytest.mark.parametrize(
+    "post_data",
+    test_data["create_posts"]
+)
+def test_create_post(api_client, post_data):
+
+    response = api_client.post(
+        "/posts",
+        post_data
+    )
+
+    assert_status_code(response, 201)
+
+    data = response.json()
+
+    assert_json_field(data, "title", post_data["title"])
+    assert_json_field(data, "body", post_data["body"])
+    assert_json_field(data, "userId", post_data["userId"])
+
+def test_get_post_response_schema(api_client):
+    response = api_client.get("/posts/1")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    # Response must be a JSON object
+    assert isinstance(data, dict)
+
+    # Required fields must exist
+    assert "id" in data
+    assert "userId" in data
+    assert "title" in data
+    assert "body" in data
+
+    # Validate data types
+    assert isinstance(data["id"], int)
+    assert isinstance(data["userId"], int)
+    assert isinstance(data["title"], str)
+    assert isinstance(data["body"], str)
+
+
+@allure.title("Validate post response JSON schema")
+def test_get_post_json_schema(api_client, posts_data):
+
+    with allure.step("Get post from API"):
+        post_id = posts_data["schema_post_id"]
+        response = api_client.get(f"/posts/{post_id}")
+
+    with allure.step("Validate HTTP status"):
+        assert_status_code(response, 200)
+
+    with allure.step("Validate JSON schema"):
+        data = response.json()
+        validate_json_schema(
+            data,
+            "test_data/post_schema.json"
+        )
