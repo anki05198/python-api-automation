@@ -32,4 +32,5 @@ jobs:
       - name: Run API and UI tests
         env:
           SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
+          HEADLESS: "true"
         run: python -m pytest
