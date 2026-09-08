@@ -18,7 +18,10 @@ ENV_URLS = {
 UI_BASE_URL = ENV_URLS[ENVIRONMENT]
 
 # Playwright
-HEADLESS = os.getenv("HEADLESS", "false").lower() == "true"
+HEADLESS = (
+    os.getenv("HEADLESS", "false").lower() == "true"
+    or os.getenv("CI", "false").lower() == "true"
+)
 
 UI_BASE_URL = ENV_URLS[ENVIRONMENT]
 
