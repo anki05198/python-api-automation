@@ -23,7 +23,5 @@ HEADLESS = (
     or os.getenv("CI", "false").lower() == "true"
 )
 
-UI_BASE_URL = ENV_URLS[ENVIRONMENT]
 
-# Playwright
-HEADLESS = False
+
